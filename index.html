@@ -21,6 +21,14 @@
             <button id="registerButton">Register</button>
         </div>
 
+        <!-- Admin Registration Form (Optional Visibility Based on Role) -->
+        <div id="adminRegisterSection" class="form-section" style="display: none;">
+            <h2>Admin Register</h2>
+            <input type="text" id="adminRegisterUsername" placeholder="Admin Username" required>
+            <input type="password" id="adminRegisterPassword" placeholder="Admin Password" required>
+            <button id="adminRegisterButton">Register as Admin</button>
+        </div>
+
         <!-- Login Form -->
         <div id="loginSection" class="form-section">
             <h2>Login</h2>
@@ -44,6 +52,22 @@
                 <button type="submit">Save Information</button>
             </form>
             <div id="patientDataDisplay"></div>
+        </div>
+
+        <!-- Admin-only Doctor Addition Form -->
+        <div id="doctorSection" style="display: none;">
+            <h2>Add Doctor (Admin Only)</h2>
+            <input type="text" id="doctorUsername" placeholder="Doctor Username" required>
+            <input type="password" id="doctorPassword" placeholder="Doctor Password" required>
+            <button id="addDoctorButton">Add Doctor</button>
+        </div>
+
+        <!-- Doctor Login Form -->
+        <div id="doctorLoginSection" class="form-section">
+            <h2>Doctor Login</h2>
+            <input type="text" id="doctorLoginUsername" placeholder="Doctor Username" required>
+            <input type="password" id="doctorLoginPassword" placeholder="Doctor Password" required>
+            <button id="doctorLoginButton">Login as Doctor</button>
         </div>
 
         <script src="script.js"></script>
