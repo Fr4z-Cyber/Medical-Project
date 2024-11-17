@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="container">
+        <div>
+            <h1>Admin Panel</h1>
+            <p>Register or log in as an admin</p>
+        </div>
+
+        <div id="registerSection" class="section form-section">
+            <h2>Register as Admin</h2>
+            <input type="text" id="adminRegisterUsername" placeholder="Admin Username" required>
+            <input type="password" id="adminRegisterPassword" placeholder="Admin Password" required>
+            <button id="adminRegisterButton">Register as Admin</button>
+        </div>
+
+        <div id="loginSection" class="section form-section">
+            <h2>Admin Login</h2>
+            <input type="text" id="adminLoginUsername" placeholder="Admin Username" required>
+            <input type="password" id="adminLoginPassword" placeholder="Admin Password" required>
+            <button id="adminLoginButton">Login as Admin</button>
+        </div>
+
+        <div id="doctorSection" class="section" style="display: none;">
+            <h2>Add Doctor</h2>
+            <input type="text" id="doctorUsername" placeholder="Doctor Username" required>
+            <input type="password" id="doctorPassword" placeholder="Doctor Password" required>
+            <button id="addDoctorButton">Add Doctor</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
