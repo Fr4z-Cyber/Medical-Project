@@ -13,64 +13,71 @@
             <p>Secure and easy access to your medical data.</p>
         </header>
 
-        <!-- Registration Form -->
-        <div id="registerSection" class="form-section">
+        <!-- Patient Login Section -->
+        <div id="patientLoginSection" class="form-section">
+            <h2>Patient Login</h2>
+            <input type="text" id="loginUsername" placeholder="Username" required>
+            <input type="password" id="loginPassword" placeholder="Password" required>
+            <button id="loginButton">Login</button>
+            <p>
+                Don't have an account? <a id="showRegisterLink" href="#">Register here</a> |
+                <a id="showDoctorLoginLink" href="#">Doctor Login</a>
+            </p>
+        </div>
+
+        <!-- Patient Registration Section -->
+        <div id="registerSection" class="form-section" style="display: none;">
             <h2>Register</h2>
             <input type="text" id="registerUsername" placeholder="Username" required>
             <input type="password" id="registerPassword" placeholder="Password" required>
             <button id="registerButton">Register</button>
+            <p><a id="showPatientLoginLink" href="#">Back to Login</a></p>
         </div>
 
-        <!-- Admin Registration Form (Optional Visibility Based on Role) -->
-        <div id="adminRegisterSection" class="form-section" style="display: none;">
-            <h2>Admin Register</h2>
-            <input type="text" id="adminRegisterUsername" placeholder="Admin Username" required>
-            <input type="password" id="adminRegisterPassword" placeholder="Admin Password" required>
-            <button id="adminRegisterButton">Register as Admin</button>
+        <!-- Doctor Login Section -->
+        <div id="doctorLoginSection" class="form-section" style="display: none;">
+            <h2>Doctor Login</h2>
+            <input type="text" id="doctorLoginUsername" placeholder="Doctor Username" required>
+            <input type="password" id="doctorLoginPassword" placeholder="Password" required>
+            <button id="doctorLoginButton">Login</button>
+            <p><a id="showPatientLoginLinkFromDoctor" href="#">Back to Login</a></p>
         </div>
 
-        <!-- Login Form -->
-        <div id="loginSection" class="form-section">
-            <h2>Login</h2>
-            <input type="text" id="loginUsername" placeholder="Username" required>
-            <input type="password" id="loginPassword" placeholder="Password" required>
-            <button id="loginButton">Login</button>
+        <!-- Appointment Booking Section -->
+        <div id="appointmentSection" style="display: none;">
+            <h2>Book an Appointment</h2>
+            <label for="specialistDropdown">Select Specialist:</label>
+            <select id="specialistDropdown">
+                <option value="cardiology">Cardiology</option>
+                <option value="dermatology">Dermatology</option>
+                <option value="neurology">Neurology</option>
+            </select>
+            <button id="bookAppointmentButton">Book Appointment</button>
         </div>
-
-        <!-- Patient Data Form (After Login) -->
+        <!-- Patient Data Section -->
         <div id="patientSection" style="display: none;">
             <h2>Your Medical Information</h2>
             <form id="patientForm">
                 <label for="name">Name:</label>
-                <input type="text" id="name" placeholder="Enter your name">
+                <input type="text" id="name" placeholder="Enter your name" required>
                 <label for="age">Age:</label>
-                <input type="number" id="age" placeholder="Enter your age">
+                <input type="number" id="age" placeholder="Enter your age" required>
                 <label for="condition">Condition:</label>
-                <input type="text" id="condition" placeholder="Enter your medical condition">
+                <input type="text" id="condition" placeholder="Enter your medical condition" required>
                 <label for="passport_id">Passport ID:</label>
-                <input type="text" id="passport_id" placeholder="Enter your passport ID">
+                <input type="text" id="passport_id" placeholder="Enter your passport ID" required>
                 <button type="submit">Save Information</button>
             </form>
             <div id="patientDataDisplay"></div>
-        </div>
+        </div>        
 
-        <!-- Admin-only Doctor Addition Form -->
-        <div id="doctorSection" style="display: none;">
-            <h2>Add Doctor (Admin Only)</h2>
-            <input type="text" id="doctorUsername" placeholder="Doctor Username" required>
-            <input type="password" id="doctorPassword" placeholder="Doctor Password" required>
-            <button id="addDoctorButton">Add Doctor</button>
+        <!-- Patient Data Display Section -->
+        <div id="patientSection" style="display: none;">
+            <h2>Your Medical Information</h2>
+            <div id="patientDataDisplay"></div>
         </div>
-
-        <!-- Doctor Login Form -->
-        <div id="doctorLoginSection" class="form-section">
-            <h2>Doctor Login</h2>
-            <input type="text" id="doctorLoginUsername" placeholder="Doctor Username" required>
-            <input type="password" id="doctorLoginPassword" placeholder="Doctor Password" required>
-            <button id="doctorLoginButton">Login as Doctor</button>
-        </div>
-
-        <script src="script.js"></script>
     </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
