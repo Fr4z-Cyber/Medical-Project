@@ -1,48 +1,114 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Register event listeners only if the elements exist on the page
-    const patientForm = document.getElementById('patientForm');
-    if (patientForm) {
-        patientForm.addEventListener('submit', savePatientData);
-    }
+    console.log('DOM fully loaded and parsed.');
 
-    const registerButton = document.getElementById('registerButton');
-    if (registerButton) {
-        registerButton.addEventListener('click', register);
-    }
+    // Sections
+    const patientLoginSection = document.getElementById('patientLoginSection');
+    const registerSection = document.getElementById('registerSection');
+    const doctorLoginSection = document.getElementById('doctorLoginSection');
 
+    // Links
+    const showRegisterLink = document.getElementById('showRegisterLink');
+    const showDoctorLoginLink = document.getElementById('showDoctorLoginLink');
+    const showPatientLoginLinks = document.querySelectorAll('#showPatientLoginLink, #showPatientLoginLinkFromDoctor');
+
+    // Buttons
     const loginButton = document.getElementById('loginButton');
+    const registerButton = document.getElementById('registerButton');
+    const doctorLoginButton = document.getElementById('doctorLoginButton');
+    const bookAppointmentButton = document.getElementById('bookAppointmentButton');
+
+    // Check and attach event listeners
+    if (showRegisterLink) {
+        showRegisterLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('Switching to register section.');
+            if (patientLoginSection) patientLoginSection.style.display = 'none';
+            if (registerSection) registerSection.style.display = 'block';
+        });
+    }
+
+    if (showDoctorLoginLink) {
+        showDoctorLoginLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('Switching to doctor login section.');
+            if (patientLoginSection) patientLoginSection.style.display = 'none';
+            if (doctorLoginSection) doctorLoginSection.style.display = 'block';
+        });
+    }
+
+    if (showPatientLoginLinks) {
+        showPatientLoginLinks.forEach((link) => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('Switching to patient login section.');
+                if (registerSection) registerSection.style.display = 'none';
+                if (doctorLoginSection) doctorLoginSection.style.display = 'none';
+                if (patientLoginSection) patientLoginSection.style.display = 'block';
+            });
+        });
+    }
+
     if (loginButton) {
         loginButton.addEventListener('click', login);
     }
 
-    // Admin-related event listeners
-    const adminRegisterButton = document.getElementById('adminRegisterButton');
-    if (adminRegisterButton) {
-        adminRegisterButton.addEventListener('click', registerAdmin);
+    if (registerButton) {
+        registerButton.addEventListener('click', register);
     }
 
-    const adminLoginButton = document.getElementById('adminLoginButton');
-    if (adminLoginButton) {
-        adminLoginButton.addEventListener('click', adminLogin);
-    }
-
-    const addDoctorButton = document.getElementById('addDoctorButton');
-    if (addDoctorButton) {
-        addDoctorButton.addEventListener('click', addDoctor);
-    }
-
-    const doctorLoginButton = document.getElementById('doctorLoginButton');
     if (doctorLoginButton) {
         doctorLoginButton.addEventListener('click', doctorLogin);
+    }
+
+    if (bookAppointmentButton) {
+        bookAppointmentButton.addEventListener('click', bookAppointment);
     }
 });
 
 let token = '';
-let userId = '';
-let userRole = ''; // To track the user's role (admin or regular)
 
-// Normal user registration
+// Login Function
+async function login() {
+    console.log('Login button clicked.');
+    const username = document.getElementById('loginUsername').value;
+    const password = document.getElementById('loginPassword').value;
+
+    if (!username || !password) {
+        alert('Please enter both username and password.');
+        return;
+    }
+
+    try {
+        const response = await fetch('http://192.168.100.102:3000/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            token = data.token;
+            localStorage.setItem('token', token);
+            alert('Login successful!');
+            console.log('Login successful:', data);
+
+            const patientSection = document.getElementById('patientSection');
+            if (patientLoginSection) patientLoginSection.style.display = 'none';
+            if (patientSection) patientSection.style.display = 'block';
+
+            loadPatientData();
+        } else {
+            const errorData = await response.json();
+            alert('Login failed: ' + (errorData.message || 'Unknown error.'));
+        }
+    } catch (error) {
+        console.error('Error during login:', error);
+    }
+}
+
+// Register Function
 async function register() {
+    console.log('Register button clicked.');
     const username = document.getElementById('registerUsername').value;
     const password = document.getElementById('registerPassword').value;
 
@@ -60,168 +126,26 @@ async function register() {
 
         if (response.ok) {
             alert('Registration successful. Please log in.');
+            console.log('Registration successful.');
+            if (registerSection) registerSection.style.display = 'none';
+            if (patientLoginSection) patientLoginSection.style.display = 'block';
         } else {
             const errorData = await response.json();
             alert('Registration failed: ' + (errorData.message || 'Unknown error.'));
         }
     } catch (error) {
         console.error('Error during registration:', error);
-        alert('Registration request failed. Please check the server connection.');
     }
 }
 
-// Admin register function
-async function registerAdmin() {
-    const username = document.getElementById('adminRegisterUsername').value;
-    const password = document.getElementById('adminRegisterPassword').value;
-
-    if (!username || !password) {
-        alert('Please enter both admin username and password.');
-        return;
-    }
-
-    try {
-        const response = await fetch('http://192.168.100.102:3000/api/admin/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
-        });
-
-        if (response.ok) {
-            alert('Admin registration successful. Please log in.');
-        } else {
-            const errorData = await response.json();
-            alert('Admin registration failed: ' + (errorData.message || 'Unknown error.'));
-        }
-    } catch (error) {
-        console.error('Error during admin registration:', error);
-        alert('Admin registration request failed. Please check the server connection.');
-    }
-}
-
-// Normal user login (for index.html)
-async function login() {
-    const username = document.getElementById('loginUsername').value;
-    const password = document.getElementById('loginPassword').value;
-
-    if (!username || !password) {
-        alert('Please enter both username and password for login.');
-        return;
-    }
-
-    try {
-        const response = await fetch('http://192.168.100.102:3000/api/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            token = data.token;
-            userId = data.userId;
-            userRole = data.role; // This will be 'admin' or 'user' based on backend response
-            alert('Login successful!');
-
-            // Hide login section and show patient section for regular users
-            document.getElementById('loginSection').style.display = 'none';
-            document.getElementById('registerSection').style.display = 'none';
-            document.getElementById('patientSection').style.display = 'block';
-
-            // Show admin functions if the logged-in user is an admin
-            if (userRole === 'admin') {
-                document.getElementById('doctorSection').style.display = 'block';
-            }
-
-            loadPatientData();
-        } else {
-            const errorData = await response.json();
-            alert('Login failed: ' + (errorData.message || 'Unknown error.'));
-        }
-    } catch (error) {
-        console.error('Error during login:', error);
-        alert('Login request failed. Please check the server connection.');
-    }
-}
-
-// Admin login (for admin.html)
-async function adminLogin() {
-    const username = document.getElementById('adminLoginUsername').value;
-    const password = document.getElementById('adminLoginPassword').value;
-
-    if (!username || !password) {
-        alert('Please enter both username and password for admin login.');
-        return;
-    }
-
-    try {
-        const response = await fetch('http://192.168.100.102:3000/api/admin/login', {  // Changed endpoint to match backend
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            token = data.token;
-            userId = data.userId;
-            userRole = 'admin'; // Set role explicitly for admin login
-            alert('Admin login successful!');
-
-            // Hide the login section and show admin functions
-            document.getElementById('loginSection').style.display = 'none';
-            document.getElementById('registerSection').style.display = 'none';
-            document.getElementById('doctorSection').style.display = 'block';
-        } else {
-            const errorData = await response.text();
-            alert('Admin login failed: ' + errorData);
-        }
-    } catch (error) {
-        console.error('Error during admin login:', error);
-        alert('Login request failed. Please check the server connection.');
-    }
-}
-
-
-// Add a doctor (admin only)
-async function addDoctor() {
-    const doctorUsername = document.getElementById('doctorUsername').value;
-    const doctorPassword = document.getElementById('doctorPassword').value;
-
-    if (!doctorUsername || !doctorPassword) {
-        alert('Please enter both doctor username and password.');
-        return;
-    }
-
-    try {
-        const response = await fetch('http://192.168.100.102:3000/api/doctors', {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`  // Admin must be authenticated
-            },
-            body: JSON.stringify({ username: doctorUsername, password: doctorPassword })
-        });
-
-        if (response.ok) {
-            alert('Doctor added successfully!');
-        } else {
-            const errorData = await response.json();
-            alert('Failed to add doctor: ' + (errorData.message || 'Unknown error.'));
-        }
-    } catch (error) {
-        console.error('Error adding doctor:', error);
-        alert('Failed to add doctor. Please try again later.');
-    }
-}
-
-// Add new doctor login function
+// Doctor Login Function
 async function doctorLogin() {
+    console.log('Doctor login button clicked.');
     const username = document.getElementById('doctorLoginUsername').value;
-    const password = document.getElementById('doctorLoginPassword').value;  // Fixed ID
+    const password = document.getElementById('doctorLoginPassword').value;
 
     if (!username || !password) {
-        alert('Please enter both username and password for doctor login.');
+        alert('Please enter both doctor username and password.');
         return;
     }
 
@@ -236,9 +160,8 @@ async function doctorLogin() {
             const data = await response.json();
             localStorage.setItem('token', data.token);
             localStorage.setItem('userId', data.doctorId);
-            localStorage.setItem('userRole', 'doctor');
-            
-            // Redirect to doctor interface
+            alert('Doctor login successful!');
+            console.log('Doctor login successful:', data);
             window.location.href = 'doctor.html';
         } else {
             const errorData = await response.json();
@@ -246,12 +169,12 @@ async function doctorLogin() {
         }
     } catch (error) {
         console.error('Error during doctor login:', error);
-        alert('Login request failed. Please check the server connection.');
     }
 }
 
-// Patient-related functions (unchanged)
+// Load Patient Data
 async function loadPatientData() {
+    console.log('Loading patient data.');
     try {
         const response = await fetch('http://192.168.100.102:3000/api/patients', {
             method: 'GET',
@@ -259,54 +182,51 @@ async function loadPatientData() {
         });
 
         if (response.ok) {
-            const patientData = await response.json();
-            document.getElementById('patientDataDisplay').innerHTML = `
-                <p>Name: ${patientData.name}</p>
-                <p>Age: ${patientData.age}</p>
-                <p>Condition: ${patientData.condition}</p>
-                <p>Passport ID: ${patientData.passport_id}</p>
-            `;
+            const [patientData] = await response.json();
+            const display = document.getElementById('patientDataDisplay');
+            if (display) {
+                display.innerHTML = `
+                    <p>Name: ${patientData?.name || 'N/A'}</p>
+                    <p>Age: ${patientData?.age || 'N/A'}</p>
+                    <p>Condition: ${patientData?.condition || 'N/A'}</p>
+                    <p>Passport ID: ${patientData?.passport_id || 'N/A'}</p>
+                `;
+            }
         } else {
-            document.getElementById('patientDataDisplay').innerHTML = 'Please add your patient data.';
+            console.error('Failed to load patient data.');
         }
     } catch (error) {
         console.error('Error loading patient data:', error);
-        alert('Failed to load patient data.');
     }
 }
 
-async function savePatientData(event) {
-    event.preventDefault();
+// Book Appointment Function
+async function bookAppointment() {
+    console.log('Book appointment button clicked.');
+    const specialist = document.getElementById('specialistDropdown').value;
 
-    const name = document.getElementById('name').value;
-    const age = document.getElementById('age').value;
-    const condition = document.getElementById('condition').value;
-    const passport_id = document.getElementById('passport_id').value;
-
-    if (!name || !age || !condition || !passport_id) {
-        alert('All fields are required.');
+    if (!specialist) {
+        alert('Please select a specialist.');
         return;
     }
 
     try {
-        const response = await fetch('http://192.168.100.102:3000/api/patients', {
+        const response = await fetch('http://192.168.100.102:3000/api/appointments', {
             method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ name, age, condition, passport_id })
+            body: JSON.stringify({ specialist })
         });
 
         if (response.ok) {
-            alert('Patient data saved successfully!');
-            loadPatientData();
+            alert('Appointment booked successfully!');
         } else {
             const errorData = await response.json();
-            alert('Failed to save patient data: ' + (errorData.message || 'Unknown error.'));
+            alert('Error booking appointment: ' + (errorData.message || 'Unknown error.'));
         }
     } catch (error) {
-        console.error('Error saving patient data:', error);
-        alert('Failed to save patient data. Please try again later.');
+        console.error('Error booking appointment:', error);
     }
 }
